@@ -27,25 +27,18 @@ public class User {
     @Column(name = "username", unique = true)
     private String email;
 
-    @Column(name = "password")
     private String password;
 
-    @Column(name = "first_name")
     private String firstName;
 
-    @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "date_of_birth")
     private LocalDate dob;
 
-    @Column(name = "sex")
     private Integer sex;
 
-    @Column(name = "phone")
     private String phone;
 
-    @Column(name = "image")
     private String image;
 
     @ManyToMany(fetch = FetchType.EAGER)
