@@ -11,12 +11,12 @@ public class GroupMembers {
 
     @ManyToOne
     @MapsId("idGroup")
-    @JoinColumn(name = "idGroup")
+    @JoinColumn(name = "id_group")
     private Group group;
 
     @ManyToOne
     @MapsId("idUser")
-    @JoinColumn(name = "idUser")
+    @JoinColumn(name = "id_user")
     private User user;
 
     private String role;
@@ -31,7 +31,10 @@ public class GroupMembers {
         this.role = role;
     }
 
-    public EmbeddedGroupMembers getId() {
+    public GroupMembers(int i, User user, Group group) {
+    }
+
+    public Long getId() {
         return id;
     }
 
@@ -61,5 +64,8 @@ public class GroupMembers {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public void setStatus(int i) {
     }
 }

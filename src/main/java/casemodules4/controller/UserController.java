@@ -1,45 +1,76 @@
 package casemodules4.controller;
 
+import casemodules4.model.User;
+import casemodules4.service.IUserService;
 import casemodules4.service.impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+
 
 @Controller
 @RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
-    @Value("${default.page.size}")
-    private Integer defaultPageSize;
 
-    private final UserServiceImpl userService;
+    @Autowired
+    private IUserService userService;
 
-    @GetMapping("/users")
-    public String getUserList(HttpServletRequest request,
-                              @RequestParam(value = "search", required = false) String search,
-                              @RequestParam(value = "page", required = false) Integer page,
-                              Model model) {
-        UserDTO user = getUserFromSession(request);
-        if (page == null)
-            page = 0;
-
-        PageRequest pageRequest = PageRequest.of(page, defaultPageSize, Sort.by("lastName").and(Sort.by("firstName")));
-        PageDTO<UserDTO> allPageable;
-        if (StringUtils.isEmpty(search)) {
-            allPageable = userService.findAllPageable(user.getId(), pageRequest);
-        } else {
-            allPageable = userService.findAllWithSearch(user.getId(), search, pageRequest);
+    @GetMapping
+    public ResponseEntity<List<User>> showAllUsers() {
+        List<User> users = userService.findAll();
+        if (users.isEmpty()) {
+            new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        model.addAttribute("page", allPageable);
-        model.addAttribute("search", search);
-        return "users";
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<User> showDetailUser(@PathVariable("id") Long id) {
+        User user = userService.findById(id);
+        if (user == null) {
+            new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @PostMapping
+    public ResponseEntity<User> createNewUser(@RequestBody User user){
+        userService.save(user);
+        if (user == null) {
+            new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(user,HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody User user){
+        User user1 = userService.findById(id);
+        if (user1 == null) {
+            new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        user.setIdUser(id);
+        userService.save(user);
+        return new ResponseEntity<>(user,HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<User> deleteUser(@PathVariable("id") Long id){
+        User user = userService.findById(id);
+        userService.deleteById(id);
+        return new ResponseEntity<>(user,HttpStatus.OK);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<User>> findAllUserByName(@RequestParam("nameSearch") String nameSearch){
+        List<User> users = userService.findAllByFullNameContaining(nameSearch);
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
 }

@@ -1,35 +1,40 @@
 package casemodules4.service.impl;
 
 import casemodules4.model.GroupMembers;
-import casemodules4.repository.IGroupMembersRepository;
 import casemodules4.service.IGroupMembersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+
 @Service
 public class GroupMembersServiceImpl implements IGroupMembersService {
     @Autowired
-    private IGroupMembersRepository iGroupMembersRepository;
+    private IGroupMembersService iGroupMembersService;
 
     @Override
     public Iterable<GroupMembers> findAll() {
-        return iGroupMembersRepository.findAll();
+        return iGroupMembersService.findAll();
     }
 
     @Override
     public Optional<GroupMembers> findById(Long id) {
-        return iGroupMembersRepository.findById(id);
+        return iGroupMembersService.findById(id);
     }
 
     @Override
     public GroupMembers save(GroupMembers groupMembers) {
-        return iGroupMembersRepository.save(groupMembers);
+        return iGroupMembersService.save(groupMembers);
     }
 
     @Override
     public void remove(Long id) {
-        iGroupMembersRepository.deleteById(id);
+        iGroupMembersService.remove(id);
+    }
+
+    @Override
+    public Optional<GroupMembers> findById_GroupAndId_User(Long id_group, Long id_user) {
+        return iGroupMembersService.findById_GroupAndId_User(id_group,id_user);
     }
 }
